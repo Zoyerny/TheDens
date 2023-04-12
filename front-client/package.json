@@ -1,0 +1,35 @@
+{
+  "name": "front-client",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "schemaDownload": "apollo schema:download --endpoint=http://localhost:4000/graphql schema.graphql",
+    "codegen": "graphql-code-generator --config ./codegen.yml --watch"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.7.11",
+    "@graphql-codegen/typescript": "^3.0.2",
+    "@graphql-codegen/typescript-operations": "^3.0.2",
+    "@reduxjs/toolkit": "^1.9.3",
+    "@types/node": "18.15.11",
+    "@types/react": "18.0.31",
+    "@types/react-dom": "18.0.11",
+    "eslint": "8.37.0",
+    "eslint-config-next": "13.2.4",
+    "graphql": "^16.6.0",
+    "next": "13.2.4",
+    "normalize.css": "^8.0.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-redux": "^8.0.5",
+    "sass": "^1.60.0",
+    "typescript": "5.0.2"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^3.2.2"
+  }
+}

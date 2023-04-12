@@ -1,0 +1,26 @@
+@use '../abstracts/' as *;
+
+body {
+    min-height: 100vh;
+  
+    // Text :
+    font-family: $font-family;
+    color: $color-text;
+    font-size: $size-text;
+    font-weight: $font-weight-text;
+    line-height: $line-height-text;
+    letter-spacing: $letter-spacing-text;
+    $font-style-text: $font-style-text;
+  
+    // Background :
+    background-color: $color-background;
+  }
+  
+  #__next {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr) 68px;
+    grid-template-rows: 68px repeat(4, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+  }

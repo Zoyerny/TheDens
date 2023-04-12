@@ -1,0 +1,69 @@
+@use '../abstracts/'as *;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+button{
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  min-height: 100vh;
+
+  // Text :
+  font-family: $font-family;
+  color: $color-text;
+  font-size: $size-text;
+  font-weight: $font-weight-text;
+  line-height: $line-height-text;
+  letter-spacing: $letter-spacing-text;
+  $font-style-text: $font-style-text;
+
+  // Background :
+  background-color: $color-background;
+}
+
+#__next {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) 68px;
+  grid-template-rows: 68px repeat(4, 1fr);
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+}
+
+// Header :
+header {
+  background-color: $color-background-header;
+  display: flex;
+  align-items: center;
+
+  grid-area: 1 / 1 / 1 / 5;
+}
+
+nav {
+  background-color: $color-background-nav-head;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  grid-area: 1 / 5 / 1 / 6;
+}
+
+main {
+  grid-area: 2 / 1 / 6 / 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

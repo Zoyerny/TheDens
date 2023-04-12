@@ -1,0 +1,5 @@
+@use '~normalize.css/normalize'; // importe normalize.css
+
+@use 'abstracts' as *; // importe _index.scss, qui importe à son tour _medias.scss, _variables.scss et _mixins.scss
+@use 'core' as *; // importe _index.scss, qui importe à son tour _root.scss et _common.scss et _accessibility.scss
+@use 'base' as *; // importe _index.scss, qui importe à son tour _global.scss et _form.scss et _nav.scss

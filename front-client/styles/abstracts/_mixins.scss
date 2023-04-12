@@ -1,0 +1,11 @@
+@use './medias'as *;
+
+@mixin bp($key) {
+    @if map-has-key($breakpoints, $key) {
+        $value: map-get($breakpoints, $key);
+
+        @media screen and (min-width: $value) {
+            @content;
+        }
+    }
+}

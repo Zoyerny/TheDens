@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String          @id @default(uuid())
+  username           String
+  email              String          @unique
+  hashedPassword     String
+  hashedRefreshToken String?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @default(now())
+  projects           ProjectUser[]
+  sentMessages       Message[]       @relation("MessageSender")
+  receivedMessages   DirectMessage[] @relation("DirectMessageRecipient")
+  sentDirectMessages DirectMessage[] @relation("DirectMessageSender")
+  onlineUser         OnlineUser?
+}
+
+model OnlineUser {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Project {
+  id          String        @id @default(uuid())
+  name        String
+  description String?
+  users       ProjectUser[]
+  messages    Message[]
+}
+
+model ProjectUser {
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  @@id([userId, projectId])
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  senderId  String
+  sender    User     @relation(name: "MessageSender", fields: [senderId], references: [id])
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+}
+
+model DirectMessage {
+  id          String   @id @default(uuid())
+  content     String
+  createdAt   DateTime @default(now())
+  senderId    String
+  sender      User     @relation(name: "DirectMessageSender", fields: [senderId], references: [id])
+  recipientId String
+  recipient   User     @relation(name: "DirectMessageRecipient", fields: [recipientId], references: [id])
+}
