@@ -8,14 +8,19 @@ export default function Router() {
 
   // Redirige l'utilisateur vers la page de connexion si non authentifié
   useEffect(() => {
+    console.log("user:", user); // Ajoutez des déclarations console.log pour le débogage
+    console.log("loading:", loading);
+
     if (!loading) {
       if (!user) {
+        console.log("Redirecting to /login");
         router.replace("/login");
       } else {
+        console.log("Redirecting to /");
         router.replace("/");
       }
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   return <></>;
 }
