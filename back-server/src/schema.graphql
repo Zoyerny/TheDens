@@ -13,7 +13,7 @@ type LogoutReponse {
 
 type Mutation {
   getNewTokens: NewTokenReponse!
-  logout(id: String!, refreshToken: String!): LogoutReponse!
+  logout(id: String!): LogoutReponse!
   signin(signInInput: SignInInput!): SignReponse!
   signup(signUpInput: SignUpInput!): SignReponse!
   updateAuth(updateAuthInput: UpdateAuthInput!): Auth!

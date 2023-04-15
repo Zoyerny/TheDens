@@ -35,7 +35,6 @@ export type Mutation = {
 
 export type MutationLogoutArgs = {
   id: Scalars['String'];
-  refreshToken: Scalars['String'];
 };
 
 
@@ -114,6 +113,13 @@ export type LoginMutationMutationVariables = Exact<{
 
 
 export type LoginMutationMutation = { __typename?: 'Mutation', signin: { __typename?: 'SignReponse', accessToken: string, refreshToken: string, user: { __typename?: 'User', id: string, username: string, email: string } } };
+
+export type LogoutMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type LogoutMutation = { __typename?: 'Mutation', logout: { __typename?: 'LogoutReponse', loggedOut: boolean } };
 
 export type OnlineOfflineUsersQueryVariables = Exact<{ [key: string]: never; }>;
 

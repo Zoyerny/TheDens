@@ -1,33 +1,58 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import NavDesktop from "./nav/NavDesktop";
+import NavSettings from "./nav/NavSettings";
+import NavMobile from "./nav/NavMobile";
 
 export default function Nav() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
-  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(document.documentElement.clientWidth < 768);
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
-    <nav>
-      <button id="ButtonMobile" onClick={handleToggle}>
-        {isOpen ? (
-          <img src="./svg/OpenNav.svg" width="38" height="25" alt="Open Nav" />
-        ) : (
-          <img
-            src="./svg/CloseNav.svg"
-            width="38"
-            height="25"
-            alt="Close Nav"
-          />
-        )}
-      </button>
-
-      {isOpen && (
-        <div id="navModal">
-          <div className="modal-content">
-            <p>Contenu de la modal...</p>
-          </div>
-        </div>
+    <>
+      {isMobile ? (
+        <nav>
+          <NavMobile/>
+        </nav>
+      ) : (
+        <>
+          <nav></nav>
+          <NavDesktop>
+            <NavSettings/>
+          </NavDesktop>
+        </>
       )}
-    </nav>
+    </>
   );
 }
+
+
+/*import { useMutation } from "@apollo/client";
+import { LOGOUT_MUTATION } from "@/graphql/logoutMutation";
+
+const { user } = useUser();
+
+const [logoutMutation] = useMutation(LOGOUT_MUTATION);
+
+const handleLogout = async () => {
+  try {
+    await logoutMutation({ variables: { userId: user.id } });
+    setUser(null);
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("refreshToken");
+    // Redirigez l'utilisateur vers la page de connexion
+  } catch (error) {
+    console.error("Error during logout:", error);
+  }
+};*/

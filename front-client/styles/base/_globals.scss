@@ -1,4 +1,4 @@
-@use '../abstracts/'as *;
+@use "../abstracts" as *;
 
 * {
   margin: 0;
@@ -6,12 +6,11 @@
   box-sizing: border-box;
 }
 
-button{
+button {
   cursor: pointer;
   border: none;
   outline: none;
   background: none;
-
 }
 
 html {
@@ -41,6 +40,10 @@ body {
   grid-template-rows: 68px repeat(4, 1fr);
   grid-column-gap: 0px;
   grid-row-gap: 0px;
+
+  @include bp("tablette") {
+    grid-template-columns: repeat(4, 1fr) 250px;
+  }
 }
 
 // Header :
@@ -52,6 +55,8 @@ header {
   grid-area: 1 / 1 / 1 / 5;
 }
 
+
+
 nav {
   background-color: $color-background-nav-head;
   display: flex;
@@ -61,9 +66,43 @@ nav {
   grid-area: 1 / 5 / 1 / 6;
 }
 
+#NavDesktop {
+  background: #343333;
+  grid-area: 2 / 5 / 6 / 6;
+
+  button {
+    margin-top: 35px;
+    width: 100px;
+    height: 30px;
+    background: #4b4746;
+    border-radius: 10px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  button:active {
+    border: 0.5px solid #db8656;
+  }
+}
+
 main {
   grid-area: 2 / 1 / 6 / 6;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @include bp("tablette") {
+    grid-area: 2 / 1 / 6 / 5;
+    
+  }
+
+  img{
+    width: 200px;
+
+    @include bp("laptop"){
+      width: 100px;
+    }
+  }
 }

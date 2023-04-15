@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { SignUpInput } from './dto/signup-input';
 import { UpdateAuthInput } from './dto/update-auth.input';
 import * as argon from 'argon2';
@@ -18,7 +18,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   // Méthode pour inscrire un nouvel utilisateur
   async signup(signUpInput: SignUpInput) {
@@ -119,29 +119,22 @@ export class AuthService {
   }
 
   // Méthode pour déconnecter un utilisateur
-  async logout(userId: string, rt: string) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-
-    if (!user) {
-      throw new UnauthorizedException('Invalid user');
-    }
-
-    const refreshTokenPayload = await this.jwtService.verifyAsync<{
-      userId: string;
-    }>(rt, {
-      secret: this.configService.get('REFRESH_TOKEN_SECRET'),
-    });
-
-    if (refreshTokenPayload.userId !== userId) {
-      throw new UnauthorizedException('Invalid refresh token');
-    }
-
-    await this.prisma.onlineUser.delete({ where: { userId: userId } });
-
-    await this.prisma.user.update({
-      where: { id: userId },
+  async logout(userId: string) {
+    await this.prisma.user.updateMany({
+      where: {
+        id: userId,
+        hashedRefreshToken: { not: null },
+      },
       data: { hashedRefreshToken: null },
     });
+
+    await this.prisma.onlineUser.delete({
+      where: {
+        userId: userId,
+      },
+    });
+
+    return { loggedOut: true };
   }
 
   async getNewToken(userId: string, rt: string) {

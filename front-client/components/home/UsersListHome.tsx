@@ -1,6 +1,5 @@
 import { useQuery } from "@apollo/client";
 import { ONLINE_OFFLINE_USERS_QUERY } from "@/graphql/onlineOfflineUsers.query";
-import { useRouter } from "next/router"; // Importez useRouter
 
 export interface User {
   id: string;
@@ -16,14 +15,12 @@ export default function UsersListHome() {
   const { loading, error, data } = useQuery<OnlineOfflineUsersData>(
     ONLINE_OFFLINE_USERS_QUERY
   );
-  const router = useRouter(); // Instanciez useRouter
 
   if (loading) return <p>Loading...</p>;
 
   // Gérez les erreurs d'autorisation
   if (error) {
     if (error.message === "Unauthorized") {
-      router.replace("/login");
       return null;
     }
     return <p>Error :( <br/> {error.message}</p>;

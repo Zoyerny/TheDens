@@ -8,6 +8,8 @@ import { UserModule } from './user/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AccesTokenGuard } from './auth/guards/acessToken.guard';
+import { HandlerSocketGateway } from './socket/handler-socket/handler-socket.gateway';
+import { SendSocketGateway } from './socket/send-socket/send-socket.gateway';
 
 @Module({
   imports: [
@@ -47,7 +49,7 @@ import { AccesTokenGuard } from './auth/guards/acessToken.guard';
   providers: [
     PrismaService, // Service Prisma pour interagir avec la base de données
     // Utilisation du garde AccesTokenGuard pour protéger les routes nécessitant une authentification
-    { provide: APP_GUARD, useClass: AccesTokenGuard },
+    { provide: APP_GUARD, useClass: AccesTokenGuard }, HandlerSocketGateway, SendSocketGateway,
   ],
 })
-export class AppModule {}
+export class AppModule { }

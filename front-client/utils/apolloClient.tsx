@@ -6,8 +6,8 @@ const httpLink = createHttpLink({
 });
 
 const authLink = setContext((_, { headers }) => {
-  const token = sessionStorage.getItem("accessToken");
-  if (!token) {
+  const token = typeof window !== "undefined" ? sessionStorage.getItem("accessToken") : null;
+  if (!token) { 
     return { headers };
   }
 

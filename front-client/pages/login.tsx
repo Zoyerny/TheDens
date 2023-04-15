@@ -2,6 +2,7 @@ import React, { useState, FormEvent } from "react";
 import { useMutation } from "@apollo/client";
 import { LOGIN_MUTATION } from "../graphql/loginMutation";
 import { useUser } from "@/utils/auth-context";
+import Image from "next/image";
 
 interface LoginResponse {
   signin: {
@@ -17,7 +18,7 @@ interface LoginResponse {
   };
 }
 
-export default function login() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setUser } = useUser();
@@ -41,11 +42,16 @@ export default function login() {
           setUser(result.data.signin.user);
 
           // Stockez les tokens dans le sessionStorage
-          sessionStorage.setItem("accessToken", result.data.signin.accessToken);
-          sessionStorage.setItem(
-            "refreshToken",
-            result.data.signin.refreshToken
-          );
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem(
+              "accessToken",
+              result.data.signin.accessToken
+            );
+            sessionStorage.setItem(
+              "refreshToken",
+              result.data.signin.refreshToken
+            );
+          }
         }
       })
       .catch((error) => {
@@ -82,7 +88,7 @@ export default function login() {
         </div>
       )}
       <button type="submit">
-        <img src="./svg/Send.svg" width="26.13" height="24" alt="Send" />
+        <Image src="/svg/Send.svg" width={26.13} height={24} alt="Send" />
       </button>
     </form>
   );

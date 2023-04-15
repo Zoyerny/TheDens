@@ -16,7 +16,7 @@ import { User } from '../user/user.entity';
 
 @Resolver(() => Auth)
 export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   // Mutation pour inscrire un nouvel utilisateur
   @Public()
@@ -50,12 +50,9 @@ export class AuthResolver {
 
   // Mutation pour déconnecter un utilisateur
   @Mutation(() => LogoutReponse)
-  logout(
-    @Args('id', { type: () => String }) id: string,
-    @Args('refreshToken', { type: () => String }) refreshToken: string,
-  ) {
+  logout(@Args('id', { type: () => String }) id: string) {
     // Call the AuthService to logout a user
-    return this.authService.logout(id, refreshToken);
+    return this.authService.logout(id);
   }
 
   // Query pour tester la connexion au serveur
@@ -76,7 +73,6 @@ export class AuthResolver {
     // Appelle le service AuthService pour générer de nouveaux jetons
     return this.authService.getNewToken(userId, refreshToken);
   }
-
 
   @Query(() => [User], { name: 'users' })
   async getUsers(@Args('isOnline', { nullable: true }) isOnline?: boolean): Promise<User[]> {
