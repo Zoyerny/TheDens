@@ -27,7 +27,6 @@ type NewTokenReponse {
 type Query {
   auth(id: String!): Auth!
   hello: String!
-  users(isOnline: Boolean): [User!]!
 }
 
 input SignInInput {

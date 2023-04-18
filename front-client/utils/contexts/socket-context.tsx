@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { createSocketConnection } from "@/utils/socket/socket";
 import { Socket } from "socket.io-client";
-import { useUser } from "../auth-context";
+import { useUser } from "@/utils/contexts/auth-context";
 import { HandlerSocket } from "@/utils/socket/handler-socket";
+import { parseCookies } from "nookies";
 
 interface SocketContextType {
   socket: Socket | null;
@@ -22,9 +23,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
   useEffect(() => {
     if (user) {
-      const token = sessionStorage.getItem("accessToken");
+      const cookies = parseCookies(); // Parsez les cookies
+      const token = cookies.accessToken; // Obtenez le token d'accès des cookies
+      const refreshToken = cookies.refreshToken; // Obtenez le token d'accès des cookies
+      const userId = user.id;
       if (token) {
-        const newSocket = createSocketConnection(token);
+        const newSocket = createSocketConnection(token,refreshToken, userId);
 
         // Créez une instance de HandlerSocket pour gérer les écouteurs
         new HandlerSocket(newSocket);

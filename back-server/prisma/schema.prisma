@@ -28,6 +28,7 @@ model User {
 model OnlineUser {
   id        String   @id @default(uuid())
   userId    String   @unique
+  socketId  String?  @unique
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())

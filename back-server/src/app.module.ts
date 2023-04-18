@@ -7,9 +7,11 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
-import { AccesTokenGuard } from './auth/guards/acessToken.guard';
+import { AccessTokenGuard } from './auth/guards/accessToken.guard';
 import { HandlerSocketGateway } from './socket/handler-socket/handler-socket.gateway';
 import { SendSocketGateway } from './socket/send-socket/send-socket.gateway';
+import { AuthService } from './auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -49,7 +51,7 @@ import { SendSocketGateway } from './socket/send-socket/send-socket.gateway';
   providers: [
     PrismaService, // Service Prisma pour interagir avec la base de données
     // Utilisation du garde AccesTokenGuard pour protéger les routes nécessitant une authentification
-    { provide: APP_GUARD, useClass: AccesTokenGuard }, HandlerSocketGateway, SendSocketGateway,
+    { provide: APP_GUARD, useClass: AccessTokenGuard }, HandlerSocketGateway, SendSocketGateway, AuthService, JwtService,
   ],
 })
 export class AppModule { }

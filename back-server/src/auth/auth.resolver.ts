@@ -74,8 +74,4 @@ export class AuthResolver {
     return this.authService.getNewToken(userId, refreshToken);
   }
 
-  @Query(() => [User], { name: 'users' })
-  async getUsers(@Args('isOnline', { nullable: true }) isOnline?: boolean): Promise<User[]> {
-    return this.authService.getUsers(isOnline);
-  }
 }

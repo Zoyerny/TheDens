@@ -2,6 +2,7 @@
 export enum ClientToServerId {
     // ...
     GET_CONNECTED_USERS = 'getConnectedUsers',
+
 }
 
 // socket.enums.ts (côté client)

@@ -10,6 +10,7 @@ import { messageHandlers } from './handler-message';
 import { verify, JwtPayload } from 'jsonwebtoken';
 import { Inject } from '@nestjs/common';
 import { SendSocketGateway } from '../send-socket';
+import { AuthService } from 'src/auth/auth.service';
 
 @WebSocketGateway({
   cors: {
@@ -24,17 +25,30 @@ export class HandlerSocketGateway implements OnGatewayConnection, OnGatewayDisco
 
   constructor(
     @Inject(SendSocketGateway) private readonly sendSocketGateway: SendSocketGateway,
+    private readonly authService: AuthService,
   ) {}
 
-  handleConnection(client: Socket, ...args: any[]) {
+  async handleConnection(client: Socket) {
     let token = client.handshake.query.token;
+    let refreshToken = client.handshake.query.refreshToken;
+    let userId = client.handshake.query.userId;
     if (Array.isArray(token)) {
       token = token[0];
     }
+    if (Array.isArray(userId)) {
+      userId = userId[0];
+    }
+    if (Array.isArray(refreshToken)) {
+      refreshToken = refreshToken[0];
+    }
     try {
       const decoded = verify(token, process.env.ACCESS_TOKEN_SECRET) as JwtPayload;
-      // Stockez les informations décodées dans les données du client si nécessaire
+      // Stockez les informations décodées dans les données du client si nécessaire b
       client.data = { ...client.data, ...decoded };
+      console.log(`clientId : ${userId}, socketId : ${client.id}`)
+      this.authService.setOnlineStatus(userId, true);
+      this.authService.setSocket(userId,client.id); 
+      
     } catch (error) {
       console.log('Token verification error:', error);
       console.log('Invalid token, disconnecting client');
@@ -42,17 +56,17 @@ export class HandlerSocketGateway implements OnGatewayConnection, OnGatewayDisco
     }
   }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket) {
     console.log(`Client disconnected: ${client.id}`);
   }
 
   @SubscribeMessage('messageToServer')
-  handleMessage(client: Socket, payload: { type: string; data: any }): void {
+  async handleMessage(client: Socket, payload: { type: string; data: any }) {
     console.log("message recu :", payload.type);
 
     const handler = messageHandlers[payload.type];
     if (handler) {
-      handler(client, payload.data, this.sendSocketGateway);
+      handler(client, payload.data, this.sendSocketGateway, this.authService);
     } else {
       console.log(`Unhandled message type: ${payload.type}`);
     }

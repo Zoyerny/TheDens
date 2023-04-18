@@ -1,8 +1,10 @@
 import React, { useState, FormEvent } from "react";
 import { useMutation } from "@apollo/client";
 import { LOGIN_MUTATION } from "../graphql/loginMutation";
-import { useUser } from "@/utils/auth-context";
+import { useUser } from "@/utils/contexts/auth-context";
 import Image from "next/image";
+import { setCookie } from "nookies";
+import { useRouter } from "next/router";
 
 interface LoginResponse {
   signin: {
@@ -22,13 +24,13 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setUser } = useUser();
+  const router = useRouter();
 
   const [loginMutation, { loading, error }] =
     useMutation<LoginResponse>(LOGIN_MUTATION);
 
   const handleLogin = (event: FormEvent) => {
     event.preventDefault();
-    console.log("login");
     loginMutation({
       variables: {
         input: {
@@ -41,17 +43,24 @@ export default function Login() {
         if (result.data) {
           setUser(result.data.signin.user);
 
-          // Stockez les tokens dans le sessionStorage
-          if (typeof window !== "undefined") {
-            sessionStorage.setItem(
-              "accessToken",
-              result.data.signin.accessToken
-            );
-            sessionStorage.setItem(
-              "refreshToken",
-              result.data.signin.refreshToken
-            );
-          }
+          const userString = JSON.stringify(result.data.signin.user);
+
+          setCookie(null, "user", userString, {
+            maxAge: 7 * 24 * 60 * 60,
+            path: "/",
+          });
+
+          // Stockez les tokens dans les cookies
+          setCookie(null, "accessToken", result.data.signin.accessToken, {
+            maxAge: 60 * 60,
+            path: "/",
+          });
+          setCookie(null, "refreshToken", result.data.signin.refreshToken, {
+            maxAge: 7 * 24 * 60 * 60,
+            path: "/",
+          });
+
+          router.push('/');
         }
       })
       .catch((error) => {

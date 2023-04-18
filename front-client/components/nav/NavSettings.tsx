@@ -1,11 +1,12 @@
 import { LOGOUT_MUTATION } from "@/graphql/logout.mutation";
-import { useUser } from "@/utils/auth-context";
+import { useUser } from "@/utils/contexts/auth-context";
 import { SendSocket } from "@/utils/socket/send-socket";
 import { createSocketConnection } from "@/utils/socket/socket";
-import { useSocket } from "@/utils/socket/socket-context";
+import { useSocket } from "@/utils/contexts/socket-context";
 import { ClientToServerId, ServerToClientId } from "@/utils/socket/socket.enums";
 import { useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
+import { destroyCookie } from "nookies";
 import React from "react";
 
 export default function NavSettings() {
@@ -29,8 +30,9 @@ export default function NavSettings() {
       await logoutMutation({ variables: { id: user.id } });
 
       // Supprimez les tokens du sessionStorage
-      sessionStorage.removeItem("accessToken");
-      sessionStorage.removeItem("refreshToken");
+      destroyCookie(null, 'accessToken');
+      destroyCookie(null, 'refreshToken');
+      destroyCookie(null, 'user');
 
       // Mettez à jour le contexte d'authentification pour supprimer l'utilisateur connecté
       setUser(null);

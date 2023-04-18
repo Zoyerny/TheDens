@@ -1,23 +1,22 @@
 import { Socket } from 'socket.io';
 import { ClientToServerId, ServerToClientId } from '../socket.enums';
 import { SendSocketGateway } from '../send-socket';
+import { AuthService } from 'src/auth/auth.service';
 
-export const handleConnected = (client: Socket, data: any, sendSocketGateway: SendSocketGateway) => {
+export const handleUpdateConnected = async (client: Socket, data: any, sendSocketGateway: SendSocketGateway, authService: AuthService) => {
     // Récupérer la liste des utilisateurs connectés
 
-    const connectedUsers = Array.from(client.nsp.sockets.values())
-        .map((socket: Socket) => ({ id: socket.id, username: (socket.data as any).username }));
+    const connectedUsers = await authService.getUsers();
 
 
     // Envoyer la liste des utilisateurs connectés au client
-
-    console.log(connectedUsers);
     sendSocketGateway.sendToAll(ServerToClientId.CONNECTED_USERS_LIST, connectedUsers);
 };
 
 // ... ajout des fonctions pour les autres types de messages
 
-export const messageHandlers: { [key: string]: (client: Socket, data?: any, sendSocketGateway?: SendSocketGateway) => void } = {
-    [ClientToServerId.GET_CONNECTED_USERS]: handleConnected,
+export const messageHandlers: { [key: string]: (client: Socket, data?: any, sendSocketGateway?: SendSocketGateway, authService?: AuthService) => Promise<void> } = {
+    [ClientToServerId.GET_CONNECTED_USERS]: handleUpdateConnected,
     // ... ajout les autres fonctions ici
 };
+
