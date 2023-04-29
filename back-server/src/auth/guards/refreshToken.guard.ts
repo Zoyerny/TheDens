@@ -2,7 +2,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { ExecutionContext } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 
-export class RefreshTokenGuard extends AuthGuard('jwt-refesh') {
+export class RefreshTokenGuard extends AuthGuard('jwt-refresh') {
     constructor() {
         super();
     }

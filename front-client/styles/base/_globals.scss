@@ -13,6 +13,10 @@ button {
   background: none;
 }
 
+a{
+  text-decoration: none;
+}
+
 html {
   font-size: 62.5%;
 }
@@ -55,8 +59,6 @@ header {
   grid-area: 1 / 1 / 1 / 5;
 }
 
-
-
 nav {
   background-color: $color-background-nav-head;
   display: flex;
@@ -87,6 +89,44 @@ nav {
   }
 }
 
+h3 {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 25px;
+  line-height: 30px;
+  display: flex;
+  align-items: center;
+  text-transform: uppercase;
+
+  color: #ffffff;
+}
+
+.sub {
+  width: 100%;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+
+  color: #848484;
+
+}
+
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow : ellipsis;
+}
+
+.line {
+  width: 100%;
+  height: 2px;
+  background: #343333;
+  border-radius: 1px;
+}
+
 main {
   grid-area: 2 / 1 / 6 / 6;
   display: flex;
@@ -95,19 +135,46 @@ main {
 
   @include bp("tablette") {
     grid-area: 2 / 1 / 6 / 5;
-    
   }
 
-  #connectedUsers{
+  #connectedUsers {
     width: 100%;
     height: 100%;
     padding: 75px 120px 75px 120px;
 
-    ul{
+    ul {
       list-style: none;
       display: flex;
       flex-direction: column;
       gap: 30px;
+
+      li {
+        width: 100%;
+        height: 60px;
+
+        .link{
+          display: flex;
+          width: 100%;
+          height: 100%;
+        }
+
+        .svg {
+          margin-top: 10px;
+        }
+
+        .contentUser {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          height: 100%;
+          margin-left: 20px;
+          text-overflow: ellipsis;
+
+          @include bp("tablette") {
+            margin-left: 50px;
+          }
+        }
+      }
     }
   }
 }

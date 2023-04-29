@@ -1,10 +1,14 @@
-import React, { useState, FormEvent } from "react";
+import React, { useState, FormEvent, useEffect } from "react";
 import { useMutation } from "@apollo/client";
-import { LOGIN_MUTATION } from "../graphql/loginMutation";
+import { LOGIN_MUTATION } from "../graphql/login.mutation";
 import { useUser } from "@/utils/contexts/auth-context";
 import Image from "next/image";
 import { setCookie } from "nookies";
 import { useRouter } from "next/router";
+import { useSocket } from "@/utils/contexts/socket-context";
+import { SendSocket } from "@/utils/socket/send-socket";
+import { ClientToServerId } from "@/utils/socket/socket.enums";
+import { useHandler } from "@/utils/contexts/handler-context";
 
 interface LoginResponse {
   signin: {
@@ -23,8 +27,8 @@ interface LoginResponse {
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setUser } = useUser();
-  const router = useRouter();
+  const { setUser, setTokenExpired, setAccessToken, setRefreshToken } =
+    useUser();
 
   const [loginMutation, { loading, error }] =
     useMutation<LoginResponse>(LOGIN_MUTATION);
@@ -43,30 +47,25 @@ export default function Login() {
         if (result.data) {
           setUser(result.data.signin.user);
 
-          const userString = JSON.stringify(result.data.signin.user);
+          setAccessToken(result.data.signin.accessToken);
 
-          setCookie(null, "user", userString, {
-            maxAge: 7 * 24 * 60 * 60,
-            path: "/",
-          });
-
-          // Stockez les tokens dans les cookies
-          setCookie(null, "accessToken", result.data.signin.accessToken, {
-            maxAge: 60 * 60,
-            path: "/",
-          });
-          setCookie(null, "refreshToken", result.data.signin.refreshToken, {
-            maxAge: 7 * 24 * 60 * 60,
-            path: "/",
-          });
-
-          router.push('/');
+          setRefreshToken(result.data.signin.refreshToken);
         }
+
+        setTokenExpired(false);
       })
       .catch((error) => {
         console.error(error);
       });
   };
+
+  /*useEffect(() =>{
+    if (user && !loadingHandler && !tokenExpired){
+      console.log("je passe ici");
+      router.push("/");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[user, loadingHandler, tokenExpired ])*/
 
   return (
     <form

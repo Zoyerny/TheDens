@@ -11,10 +11,11 @@ import { verify, JwtPayload } from 'jsonwebtoken';
 import { Inject } from '@nestjs/common';
 import { SendSocketGateway } from '../send-socket';
 import { AuthService } from 'src/auth/auth.service';
+import { ServerToClientId } from '../socket.enums';
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.CLIENT_URL,
+    origin: true,//process.env.CLIENT_URL,
     methods: ['GET', 'POST'],
     allowedHeaders: ['Origin, X-Requested-With, Content-Type, Accept, Authorization'],
     credentials: true
@@ -26,7 +27,7 @@ export class HandlerSocketGateway implements OnGatewayConnection, OnGatewayDisco
   constructor(
     @Inject(SendSocketGateway) private readonly sendSocketGateway: SendSocketGateway,
     private readonly authService: AuthService,
-  ) {}
+  ) { }
 
   async handleConnection(client: Socket) {
     let token = client.handshake.query.token;
@@ -47,8 +48,10 @@ export class HandlerSocketGateway implements OnGatewayConnection, OnGatewayDisco
       client.data = { ...client.data, ...decoded };
       console.log(`clientId : ${userId}, socketId : ${client.id}`)
       this.authService.setOnlineStatus(userId, true);
-      this.authService.setSocket(userId,client.id); 
-      
+      this.authService.setSocket(userId, client.id);
+      const connectedUsers = await this.authService.getUsers();
+      this.sendSocketGateway.sendToAll(ServerToClientId.CONNECTED_USERS_LIST, connectedUsers);
+
     } catch (error) {
       console.log('Token verification error:', error);
       console.log('Invalid token, disconnecting client');
@@ -58,6 +61,8 @@ export class HandlerSocketGateway implements OnGatewayConnection, OnGatewayDisco
 
   async handleDisconnect(client: Socket) {
     console.log(`Client disconnected: ${client.id}`);
+    const connectedUsers = await this.authService.getUsers();
+    this.sendSocketGateway.sendToAll(ServerToClientId.CONNECTED_USERS_LIST, connectedUsers);
   }
 
   @SubscribeMessage('messageToServer')

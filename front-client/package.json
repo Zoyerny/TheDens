@@ -22,6 +22,7 @@
     "eslint-config-next": "13.2.4",
     "graphql": "^16.6.0",
     "js-cookie": "^3.0.1",
+    "jsonwebtoken": "^9.0.0",
     "next": "13.2.4",
     "nookies": "^2.5.2",
     "normalize.css": "^8.0.1",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^3.2.2",
+    "@types/jsonwebtoken": "^9.0.1",
     "@types/socket.io-client": "^3.0.0"
   }
 }

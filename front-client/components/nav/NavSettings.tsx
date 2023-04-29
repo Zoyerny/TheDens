@@ -1,16 +1,15 @@
 import { LOGOUT_MUTATION } from "@/graphql/logout.mutation";
 import { useUser } from "@/utils/contexts/auth-context";
 import { SendSocket } from "@/utils/socket/send-socket";
-import { createSocketConnection } from "@/utils/socket/socket";
 import { useSocket } from "@/utils/contexts/socket-context";
-import { ClientToServerId, ServerToClientId } from "@/utils/socket/socket.enums";
+import {
+  ClientToServerId,
+} from "@/utils/socket/socket.enums";
 import { useMutation } from "@apollo/client";
-import { useRouter } from "next/router";
-import { destroyCookie } from "nookies";
+import { setCookie } from "nookies";
 import React from "react";
 
 export default function NavSettings() {
-  const router = useRouter();
   const { user, setUser } = useUser();
   const [logoutMutation] = useMutation(LOGOUT_MUTATION);
 
@@ -18,9 +17,40 @@ export default function NavSettings() {
 
   const handleGetList = () => {
     if (socket) {
-      const message = new SendSocket(socket);
+      const message = new SendSocket(socket.getSocket()!);
       message.send(ClientToServerId.GET_CONNECTED_USERS);
+      console.log("ENVOIE DE LA DONNER REUSSI !")
     }
+  };
+
+  const handleTestToken = () => {
+    if (socket) {
+      const message = new SendSocket(socket.getSocket()!);
+      message.testRefreshToken();
+    }
+  };
+
+  const undefinedCookies = () => {
+    setCookie(null, "user", "", {
+      maxAge: 0,
+      path: "/",
+      //secure: true,
+      //httpOnly: true,
+    });
+
+    setCookie(null, "accessToken", "", {
+      maxAge: 0,
+      path: "/",
+      //secure: true,
+      //httpOnly: true,
+    });
+
+    setCookie(null, "refreshToken", "", {
+      maxAge: 0,
+      path: "/",
+      //secure: true,
+      //httpOnly: true,
+    });
   };
 
   const handleLogout = async () => {
@@ -29,25 +59,21 @@ export default function NavSettings() {
     try {
       await logoutMutation({ variables: { id: user.id } });
 
-      // Supprimez les tokens du sessionStorage
-      destroyCookie(null, 'accessToken');
-      destroyCookie(null, 'refreshToken');
-      destroyCookie(null, 'user');
+      // Supprimez les tokens des Cookies
+      undefinedCookies();
 
-      // Mettez à jour le contexte d'authentification pour supprimer l'utilisateur connecté
       setUser(null);
 
-      // Redirigez l'utilisateur vers la page de connexion ou une autre page appropriée
-      router.push("/login");
-      socket!.disconnect();
+      socket?.getSocket()?.disconnect();
     } catch (error) {
       console.error("Error during logout:", error);
     }
   };
-  return(
+  return (
     <>
-    <button onClick={handleGetList}>Get connected users</button>
-    <button onClick={handleLogout}>Logout</button>
+      <button onClick={handleTestToken}>handleTestToken</button>
+      <button onClick={handleGetList}>Get connected users</button>
+      <button onClick={handleLogout}>Logout</button>
     </>
-  ) 
+  );
 }

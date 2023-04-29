@@ -16,7 +16,6 @@ export class SendSocketGateway implements OnGatewayConnection {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   sendToAll(serverToClientId: string, message: any, excludeClientId?: string): void {
-    console.log('Sending message:', serverToClientId, message); // Ajouter cette ligne
     this.server.emit(serverToClientId, message);
   }
 

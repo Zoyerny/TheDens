@@ -69,9 +69,11 @@ export class AuthResolver {
   getNewTokens(
     @CurrentUserId() userId: string,
     @CurrentUser('refreshToken') refreshToken: string,
+    @Args('refreshToken', { type: () => String }) refreshTokenArg: string,
   ) {
     // Appelle le service AuthService pour générer de nouveaux jetons
-    return this.authService.getNewToken(userId, refreshToken);
+    return this.authService.getNewTokens(userId, refreshToken);
   }
+  
 
 }

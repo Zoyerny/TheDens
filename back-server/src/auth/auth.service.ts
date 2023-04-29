@@ -163,7 +163,7 @@ export class AuthService {
     return onlineUser?.userId;
   }
 
-  async getNewToken(userId: string, rt: string) {
+  async getNewTokens(userId: string, rt: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
 
     if (!user) {
@@ -180,7 +180,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    const isRefreshTokenMatching = await argon.verify(
+    const isRefreshTokenMatching = await argon.verify(   
       user.hashedRefreshToken,
       rt,
     );
@@ -189,7 +189,14 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    return this.createTokens(userId, user.email);
+    const { accessToken, refreshToken } = await this.createTokens(
+      user.id.toString(),
+      user.email,
+    );
+
+    await this.updateRefreshToken(user.id.toString(), refreshToken);
+    return { accessToken, refreshToken };
+    
   }
 
   async setOnlineStatus(userId: string, isOnline: boolean) {

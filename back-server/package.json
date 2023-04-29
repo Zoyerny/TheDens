@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "graphql-codegen": "graphql-codegen",
+    "generate-schema": "ts-node generate-schema.ts",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",

@@ -33,6 +33,11 @@ export type Mutation = {
 };
 
 
+export type MutationGetNewTokensArgs = {
+  refreshToken: Scalars['String'];
+};
+
+
 export type MutationLogoutArgs = {
   id: Scalars['String'];
 };
@@ -62,17 +67,11 @@ export type Query = {
   __typename?: 'Query';
   auth: Auth;
   hello: Scalars['String'];
-  users: Array<User>;
 };
 
 
 export type QueryAuthArgs = {
   id: Scalars['String'];
-};
-
-
-export type QueryUsersArgs = {
-  isOnline?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type SignInInput = {
@@ -121,7 +120,9 @@ export type LogoutMutationVariables = Exact<{
 
 export type LogoutMutation = { __typename?: 'Mutation', logout: { __typename?: 'LogoutReponse', loggedOut: boolean } };
 
-export type OnlineOfflineUsersQueryVariables = Exact<{ [key: string]: never; }>;
+export type RefreshTokensMutationMutationVariables = Exact<{
+  refreshToken: Scalars['String'];
+}>;
 
 
-export type OnlineOfflineUsersQuery = { __typename?: 'Query', onlineUsers: Array<{ __typename?: 'User', id: string, username: string }>, offlineUsers: Array<{ __typename?: 'User', id: string, username: string }> };
+export type RefreshTokensMutationMutation = { __typename?: 'Mutation', getNewTokens: { __typename?: 'NewTokenReponse', accessToken: string, refreshToken: string } };

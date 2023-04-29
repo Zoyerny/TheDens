@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { useHandler } from "@/utils/contexts/handler-context";
+import Link from "next/link";
 import Image from "next/image";
 
 export interface User {
@@ -6,19 +9,40 @@ export interface User {
 }
 
 export default function UsersListHome() {
+  const { onlineUsers } = useHandler();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (onlineUsers && onlineUsers.length > 0) {
+      setIsLoading(false);
+    }
+  }, [onlineUsers]);
+
+  if (isLoading) {
+    return <div>Aucun Utilisateur connecté...</div>;
+  }
 
   return (
     <div id="connectedUsers">
       <ul>
-        <li>
-          <Image src="/svg/OpenNav.svg" width={38} height={25} alt="Open Nav" />
-          <div className="contentUser">
-            <h3 className="NameUser">Allan</h3>
-            <h4 className="subUser">Mora - Dessin</h4>
-            <div className="line"></div>
-          </div>
-        </li>
-
+        {onlineUsers.map((user: User) => (
+          <li key={user.id}>
+            <Link className="link" href={`/private-chat/${user.id}`}>
+              <Image
+                className="svg"
+                src="/svg/rond_vert.svg"
+                width={12}
+                height={12}
+                alt="Open Nav"
+              />
+              <div className="contentUser">
+                <h3 className="NameUser ellipsis">{user.username}</h3>
+                <p className="sub ellipsis">Mora - Dessin</p>
+                <div className="line"></div>
+              </div>
+            </Link>
+          </li>
+        ))}
       </ul>
     </div>
   );

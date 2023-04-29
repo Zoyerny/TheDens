@@ -5,7 +5,6 @@ import { AuthService } from 'src/auth/auth.service';
 
 export const handleUpdateConnected = async (client: Socket, data: any, sendSocketGateway: SendSocketGateway, authService: AuthService) => {
     // Récupérer la liste des utilisateurs connectés
-
     const connectedUsers = await authService.getUsers();
 
 

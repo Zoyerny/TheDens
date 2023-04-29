@@ -1,28 +1,72 @@
-import React from "react";
-import { useQuery } from "@apollo/client";
+import { useEffect, useState } from "react";
+import { useHandler } from "@/utils/contexts/handler-context";
+import Link from "next/link";
+import Image from "next/image";
+import NavSettings from "./NavSettings";
 import { useUser } from "@/utils/contexts/auth-context";
 
-export default function NavDesktop({ children }: { children: React.ReactNode }) {
+export interface User {
+  id: string;
+  username: string;
+}
 
-  const { user } = useUser();
+export default function NavDesktop({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { onlineUsers,offlineUsers } = useHandler();
+  const {user} = useUser();
+
+  if (!user) {
+    return <div>Aucun Utilisateur connecté...</div>;
+  }
 
   return (
     <div id="NavDesktop">
-      {user ? (
-        <>
-          <h2>Online Users</h2>
-          <ul>
-            coucou
-          </ul>
-          <h2>Offline Users</h2>
-          <ul>
-            coucou
-          </ul>
-          {children}
-        </>
-      ) : (
-        <h2>Server connected</h2>
-      )}
+      <ul>
+        {onlineUsers.map((user: User) => (
+          <li key={user.id}>
+            <Link className="link" href={`/private-chat/${user.id}`}>
+              <Image
+                className="svg"
+                src="/svg/rond_vert.svg"
+                width={12}
+                height={12}
+                alt="Open Nav"
+              />
+              <div className="contentUser">
+                <h3 className="NameUser ellipsis">{user.username}</h3>
+                <p className="sub ellipsis">Mora - Dessin</p>
+                <div className="line"></div>
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ul>
+
+      <ul>
+        {offlineUsers.map((user: User) => (
+          <li key={user.id}>
+            <Link className="link" href={`/private-chat/${user.id}`}>
+              <Image
+                className="svg"
+                src="/svg/rond_vert.svg"
+                width={12}
+                height={12}
+                alt="Open Nav"
+              />
+              <div className="contentUser">
+                <h3 className="NameUser ellipsis">{user.username}</h3>
+                <p className="sub ellipsis">Mora - Dessin</p>
+                <div className="line"></div>
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ul>
+
+      <NavSettings/>
     </div>
   );
 }
