@@ -1,7 +1,7 @@
 import React, { useState, FormEvent, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import { LOGIN_MUTATION } from "../graphql/login.mutation";
-import { useUser } from "@/utils/contexts/auth-context";
+import { useAuth } from "@/utils/contexts/auth-context";
 import Image from "next/image";
 import { setCookie } from "nookies";
 import { useRouter } from "next/router";
@@ -28,7 +28,9 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setUser, setTokenExpired, setAccessToken, setRefreshToken } =
-    useUser();
+    useAuth();
+
+  const router = useRouter();
 
   const [loginMutation, { loading, error }] =
     useMutation<LoginResponse>(LOGIN_MUTATION);
@@ -46,10 +48,9 @@ export default function Login() {
       .then((result) => {
         if (result.data) {
           setUser(result.data.signin.user);
-
           setAccessToken(result.data.signin.accessToken);
-
           setRefreshToken(result.data.signin.refreshToken);
+          router.push("/");
         }
 
         setTokenExpired(false);

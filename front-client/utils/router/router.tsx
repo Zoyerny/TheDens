@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useUser } from "@/utils/contexts/auth-context";
+import { useAuth } from "@/utils/contexts/auth-context";
 import { routesConfig } from "@/utils/router/routesConfig";
 
 function checkConditionsAndRedirect(
@@ -8,8 +8,8 @@ function checkConditionsAndRedirect(
   loading: boolean,
   tokenExpired: boolean,
   router: ReturnType<typeof useRouter>,
-  isRedirecting: boolean, 
-  setIsRedirecting: (value: boolean) => void 
+  isRedirecting: boolean,
+  setIsRedirecting: (value: boolean) => void
 ) {
   console.log("je passe ici");
   for (const route of routesConfig) {
@@ -18,43 +18,55 @@ function checkConditionsAndRedirect(
       route.condition(user, loading, tokenExpired) &&
       router.pathname !== route.redirectTo &&
       !router.isFallback &&
-      !isRedirecting 
+      !isRedirecting
     ) {
       console.log(`Redirecting to ${route.redirectTo}`);
-      setIsRedirecting(true); 
-      router.replace(route.redirectTo).then(() => setIsRedirecting(false)); 
+      setIsRedirecting(true);
+      router.replace(route.redirectTo).then(() => setIsRedirecting(false));
       return;
     }
   }
 }
 
-
-
 export default function Router() {
-  const { user, loading, tokenExpired } = useUser();
+  const { user, loading, tokenExpired } = useAuth();
   const [isRedirecting, setIsRedirecting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     if (!loading) {
-      checkConditionsAndRedirect(user, loading, tokenExpired, router, isRedirecting, setIsRedirecting);
+      checkConditionsAndRedirect(
+        user,
+        loading,
+        tokenExpired,
+        router,
+        isRedirecting,
+        setIsRedirecting
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading, tokenExpired]);
-  
+
   useEffect(() => {
     const handleRouteChange = (url: string) => {
       if (!loading) {
-        checkConditionsAndRedirect(user, loading, tokenExpired, router, isRedirecting, setIsRedirecting);
+        checkConditionsAndRedirect(
+          user,
+          loading,
+          tokenExpired,
+          router,
+          isRedirecting,
+          setIsRedirecting
+        );
       }
     };
-  
+
     router.events.on("routeChangeComplete", handleRouteChange);
-  
+
     return () => {
       router.events.off("routeChangeComplete", handleRouteChange);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router, user, loading, tokenExpired]);
 
   return <></>;

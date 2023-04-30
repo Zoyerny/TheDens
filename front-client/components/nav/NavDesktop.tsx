@@ -3,7 +3,7 @@ import { useHandler } from "@/utils/contexts/handler-context";
 import Link from "next/link";
 import Image from "next/image";
 import NavSettings from "./NavSettings";
-import { useUser } from "@/utils/contexts/auth-context";
+import { useAuth } from "@/utils/contexts/auth-context";
 
 export interface User {
   id: string;
@@ -15,8 +15,8 @@ export default function NavDesktop({
 }: {
   children: React.ReactNode;
 }) {
-  const { onlineUsers,offlineUsers } = useHandler();
-  const {user} = useUser();
+  const { onlineUsers, offlineUsers } = useHandler();
+  const { user } = useAuth();
 
   if (!user) {
     return <div>Aucun Utilisateur connecté...</div>;
@@ -66,7 +66,7 @@ export default function NavDesktop({
         ))}
       </ul>
 
-      <NavSettings/>
+      <NavSettings />
     </div>
   );
 }

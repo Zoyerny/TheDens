@@ -1,16 +1,14 @@
 import { LOGOUT_MUTATION } from "@/graphql/logout.mutation";
-import { useUser } from "@/utils/contexts/auth-context";
+import { useAuth } from "@/utils/contexts/auth-context";
 import { SendSocket } from "@/utils/socket/send-socket";
 import { useSocket } from "@/utils/contexts/socket-context";
-import {
-  ClientToServerId,
-} from "@/utils/socket/socket.enums";
+import { ClientToServerId } from "@/utils/socket/socket.enums";
 import { useMutation } from "@apollo/client";
 import { setCookie } from "nookies";
 import React from "react";
 
 export default function NavSettings() {
-  const { user, setUser } = useUser();
+  const { user, setUser } = useAuth();
   const [logoutMutation] = useMutation(LOGOUT_MUTATION);
 
   const { socket } = useSocket();
@@ -19,7 +17,7 @@ export default function NavSettings() {
     if (socket) {
       const message = new SendSocket(socket.getSocket()!);
       message.send(ClientToServerId.GET_CONNECTED_USERS);
-      console.log("ENVOIE DE LA DONNER REUSSI !")
+      console.log("ENVOIE DE LA DONNER REUSSI !");
     }
   };
 

@@ -1,23 +1,29 @@
 import React, { useEffect } from "react";
 import Header from "./Header";
 import Nav from "./Nav";
-import { useSocket } from '@/utils/contexts/socket-context';
-import { useUser } from '@/utils/contexts/auth-context';
-import { ClientToServerId } from '@/utils/socket/socket.enums';
-import { SendSocket } from '@/utils/socket/send-socket';
+import { useSocket } from "@/utils/contexts/socket-context";
+import { useAuth } from "@/utils/contexts/auth-context";
+import { ClientToServerId } from "@/utils/socket/socket.enums";
+import { SendSocket } from "@/utils/socket/send-socket";
+import { useRouter } from "next/router";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { socket, isConnected } = useSocket(); // Ajoutez isConnected ici
-  const { user } = useUser();
+  const { sendMessage, events, isConnected } = useSocket(); // Ajoutez isConnected ici
+  const { user } = useAuth();
+
+  const router = useRouter();
 
   useEffect(() => {
-    console.log("layout --------------:", socket, user,isConnected)
-    if (socket && user && isConnected) { // Ajoutez isConnected dans la condition
-      const message = new SendSocket(socket.getSocket()!);
-      message.send(ClientToServerId.GET_CONNECTED_USERS);
-      console.log("message envoyé")
+    if (!user) {
+      router.push("/login");
     }
-  }, [socket, user, isConnected]); // Ajoutez isConnected ici
+  }, []);
+
+  useEffect(() => {
+    if (isConnected) {
+      sendMessage(ClientToServerId.GET_CONNECTED_USERS);
+    }
+  }, [isConnected]);
 
   return (
     <>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useHandler } from "@/utils/contexts/handler-context";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "@/utils/contexts/auth-context";
 
 export interface User {
   id: string;
@@ -11,6 +12,7 @@ export interface User {
 export default function UsersListHome() {
   const { onlineUsers } = useHandler();
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (onlineUsers && onlineUsers.length > 0) {
