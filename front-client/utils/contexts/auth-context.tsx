@@ -10,13 +10,11 @@ export interface UserType {
 export interface AuthContextType {
   user: UserType | null;
   loading: boolean;
-  tokenExpired: boolean;
   accessToken: string | null;
   refreshToken: string | null;
 
   setUser: (user: UserType | null) => void;
   setLoading: (loading: boolean) => void;
-  setTokenExpired: (loading: boolean) => void;
   setAccessToken: (token: string | null) => void;
   setRefreshToken: (token: string | null) => void;
 }
@@ -24,13 +22,11 @@ export interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: false,
-  tokenExpired: true,
   accessToken: null,
   refreshToken: null,
 
   setUser: () => {},
   setLoading: () => {},
-  setTokenExpired: () => {},
   setAccessToken: () => {},
   setRefreshToken: () => {},
 });
@@ -42,19 +38,18 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [tokenExpired, setTokenExpired] = useState(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
   const { cookieAccessToken, cookieRefreshToken, cookieUser } = parseCookies();
 
   useEffect(() => {
-    console.log(
+    /*console.log(
       "cookieAccessToken, cookieRefreshToken, cookieUser",
       cookieAccessToken,
       cookieRefreshToken,
       cookieUser
-    );
+    );*/
     if (cookieAccessToken) {
       setAccessToken(cookieAccessToken);
     }
@@ -66,49 +61,53 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (cookieUser) {
       setUser(JSON.parse(cookieUser));
     }
+    setLoading(false);
   }, []);
 
   useEffect(() => {
-    console.log(
+    /*console.log(
       "user, accessToken, refreshToken",
       user,
       accessToken,
       refreshToken
-    );
+    );*/
+
     if (user) {
-      setCookie(null, "user", JSON.stringify(user), {
+      setCookie(null, "cookieUser", JSON.stringify(user), {
         maxAge: 30 * 24 * 60 * 60,
         path: "/",
       });
     }
 
     if (accessToken) {
-      setCookie(null, "accessToken", accessToken, {
+      setCookie(null, "cookieAccessToken", accessToken, {
         maxAge: 60 * 60,
         path: "/",
       });
     }
 
     if (refreshToken) {
-      setCookie(null, "refreshToken", refreshToken, {
+      setCookie(null, "cookieRefreshToken", refreshToken, {
         maxAge: 7 * 24 * 60 * 60,
         path: "/",
       });
     }
   }, [user, accessToken, refreshToken]);
 
+  if (loading){
+    return <p>Loading...</p>
+  }
+
   return (
     <AuthContext.Provider
       value={{
         user,
         loading,
-        tokenExpired,
         accessToken,
         refreshToken,
 
         setUser,
         setLoading,
-        setTokenExpired,
         setAccessToken,
         setRefreshToken,
       }}

@@ -8,47 +8,15 @@ import { setCookie } from "nookies";
 import React from "react";
 
 export default function NavSettings() {
-  const { user, setUser } = useAuth();
+  const { user, setUser, setAccessToken, setRefreshToken } = useAuth();
   const [logoutMutation] = useMutation(LOGOUT_MUTATION);
 
-  const { socket } = useSocket();
+  const { isConnected, sendMessage } = useSocket();
 
   const handleGetList = () => {
-    if (socket) {
-      const message = new SendSocket(socket.getSocket()!);
-      message.send(ClientToServerId.GET_CONNECTED_USERS);
-      console.log("ENVOIE DE LA DONNER REUSSI !");
+    if (isConnected) {
+      sendMessage(ClientToServerId.GET_CONNECTED_USERS);
     }
-  };
-
-  const handleTestToken = () => {
-    if (socket) {
-      const message = new SendSocket(socket.getSocket()!);
-      message.testRefreshToken();
-    }
-  };
-
-  const undefinedCookies = () => {
-    setCookie(null, "user", "", {
-      maxAge: 0,
-      path: "/",
-      //secure: true,
-      //httpOnly: true,
-    });
-
-    setCookie(null, "accessToken", "", {
-      maxAge: 0,
-      path: "/",
-      //secure: true,
-      //httpOnly: true,
-    });
-
-    setCookie(null, "refreshToken", "", {
-      maxAge: 0,
-      path: "/",
-      //secure: true,
-      //httpOnly: true,
-    });
   };
 
   const handleLogout = async () => {
@@ -58,18 +26,17 @@ export default function NavSettings() {
       await logoutMutation({ variables: { id: user.id } });
 
       // Supprimez les tokens des Cookies
-      undefinedCookies();
 
       setUser(null);
-
-      socket?.getSocket()?.disconnect();
+      setAccessToken(null);
+      setRefreshToken(null);
+      //socket?.getSocket()?.disconnect();
     } catch (error) {
       console.error("Error during logout:", error);
     }
   };
   return (
     <>
-      <button onClick={handleTestToken}>handleTestToken</button>
       <button onClick={handleGetList}>Get connected users</button>
       <button onClick={handleLogout}>Logout</button>
     </>

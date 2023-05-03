@@ -1,13 +1,8 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { contextEventEmitter } from "../socketToContext/event-emitter";
 import { HandlerContextEventId } from "../socketToContext/event.enums";
 
-export interface OnlineUserType {
+/*export interface OnlineUserType {
   id: string;
   socketId: string;
   username: string;
@@ -19,15 +14,15 @@ export interface OfflineUserType {
   id: string;
   username: string;
   email: string;
-}
+}*/
 
 export interface HandlerContextType {
   loadingHandler: boolean;
   setLoadingHandler: (loading: boolean) => void;
-  onlineUsers: OnlineUserType[];
-  setOnlineUsers: (onlineUsers: OnlineUserType[]) => void;
-  offlineUsers: OfflineUserType[];
-  setOfflineUsers: (offlineUsers: OfflineUserType[]) => void;
+  onlineUsers: [];
+  setOnlineUsers: (onlineUsers: []) => void;
+  offlineUsers: [];
+  setOfflineUsers: (offlineUsers: []) => void;
 }
 
 const HandlerContext = createContext<HandlerContextType>({
@@ -47,40 +42,8 @@ export const HandlerProvider: React.FC<HandlerProviderProps> = ({
   children,
 }) => {
   const [loadingHandler, setLoadingHandler] = useState<boolean>(true);
-  const [onlineUsers, setOnlineUsers] = useState<OnlineUserType[]>([]);
-  const [offlineUsers, setOfflineUsers] = useState<OfflineUserType[]>([]);
-  
-
-  useEffect(() => {
-    const handleUpdateUsers = (data: {
-      onlineUsers: OnlineUserType[];
-      offlineUsers: OfflineUserType[];
-    }) => {
-      setOnlineUsers(data.onlineUsers);
-      setOfflineUsers(data.offlineUsers);
-    };
-
-    const handleSetLoading = (isLoading: boolean) => {
-      setLoadingHandler(isLoading);
-    };
-
-    const handleReset = () => {
-      setOnlineUsers([]);
-      setOfflineUsers([]);
-    }
-
-    // Ajoutez des écouteurs d'événements
-    contextEventEmitter.on(HandlerContextEventId.UPDATE_USERS, handleUpdateUsers);
-    contextEventEmitter.on(HandlerContextEventId.SET_LOADING, handleSetLoading);
-    contextEventEmitter.on(HandlerContextEventId.RESET, handleReset);
-
-    // Supprimez les écouteurs d'événements lors du nettoyage
-    return () => {
-      contextEventEmitter.off(HandlerContextEventId.UPDATE_USERS, handleUpdateUsers);
-      contextEventEmitter.off(HandlerContextEventId.SET_LOADING, handleSetLoading);
-      contextEventEmitter.off(HandlerContextEventId.RESET, handleReset);
-    };
-  }, []);
+  const [onlineUsers, setOnlineUsers] = useState<[]>([]);
+  const [offlineUsers, setOfflineUsers] = useState<[]>([]);
 
   return (
     <HandlerContext.Provider
@@ -88,9 +51,9 @@ export const HandlerProvider: React.FC<HandlerProviderProps> = ({
         loadingHandler,
         setLoadingHandler,
         onlineUsers: onlineUsers,
-        setOnlineUsers: setOnlineUsers, // Modifie cette ligne
+        setOnlineUsers: setOnlineUsers,
         offlineUsers: offlineUsers,
-        setOfflineUsers: setOfflineUsers, // Modifie cette ligne
+        setOfflineUsers: setOfflineUsers,
       }}
     >
       {children}

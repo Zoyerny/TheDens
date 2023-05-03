@@ -49,6 +49,7 @@ export class AuthResolver {
   }
 
   // Mutation pour déconnecter un utilisateur
+  @Public()
   @Mutation(() => LogoutReponse)
   logout(@Args('id', { type: () => String }) id: string) {
     // Call the AuthService to logout a user

@@ -1,9 +1,8 @@
-import UsersListHome from "@/components/home/UsersListHome";
 import { useAuth } from "@/utils/contexts/auth-context";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-export default function Home() {
+export default function Acount() {
   const { user } = useAuth();
   const router = useRouter();
 
@@ -13,9 +12,5 @@ export default function Home() {
     }
   }, [user]);
 
-  return (
-    <>
-      <UsersListHome />
-    </>
-  );
+  return <div>acount</div>;
 }

@@ -8,17 +8,16 @@ import React, {
 } from "react";
 import { useAuth } from "@/utils/contexts/auth-context";
 import { Socket, io } from "socket.io-client";
-import { ClientToServerId } from "../socket/socket.enums";
+import { ClientToServerId, ServerToClientId } from "../socket/socket.enums";
+import { useHandler } from "./handler-context";
 
 export interface SocketContextType {
   isConnected: boolean;
-  events: any[];
   sendMessage: (type: ClientToServerId, data?: string) => void;
 }
 
 const SocketContext = createContext<SocketContextType>({
   isConnected: false,
-  events: [],
   sendMessage: () => {},
 });
 
@@ -29,14 +28,13 @@ interface SocketProviderProps {
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(socket?.connected ?? false);
-  const [events, setEvents] = useState<any[]>([]);
+  const { setOnlineUsers, setOfflineUsers } = useHandler();
 
-  const { user, tokenExpired, accessToken, refreshToken } = useAuth();
+  const { user, accessToken, refreshToken } = useAuth();
 
   const sendMessage = (type: ClientToServerId, data?: string) => {
     if (socket) {
-      console.log("Message envoye <3", socket);
-      socket.emit("Hello", "World");
+      console.log("Message envoye <3");
       socket.emit("messageToServer", {
         type,
         data,
@@ -45,7 +43,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    console.log("Common darling", accessToken, refreshToken, user?.id);
     if (accessToken && refreshToken && user?.id) {
       const socket = io(process.env.NEXT_PUBLIC_WEBSOCKET_URL!, {
         query: {
@@ -63,8 +60,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   }, [user?.id]);
 
   useEffect(() => {
-    console.log("INN Socket", socket);
-
     if (!socket) {
       return;
     }
@@ -81,25 +76,27 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       console.log("Connection error:", error);
     }
 
-    function onEvent(value: any) {
-      setEvents((previous) => [...previous, value]);
+    function onConnectedUserList(data: any) {
+      setOnlineUsers(data.onlineUsers);
+      setOfflineUsers(data.offlineUsers);
     }
 
     socket.on("connect", onConnect);
     socket.on("connect_error", onConnectionError);
     socket.on("disconnect", onDisconnect);
-    socket.on("connectedUsersList", onEvent);
+
+    socket.on(ServerToClientId.CONNECTED_USERS_LIST, onConnectedUserList);
 
     return () => {
       socket.off("connect", onConnect);
       socket.on("connect_error", onConnectionError);
       socket.off("disconnect", onDisconnect);
-      socket.off("connectedUsersList", onEvent);
+      socket.off(ServerToClientId.CONNECTED_USERS_LIST, onConnectedUserList);
     };
   }, [socket]);
 
   return (
-    <SocketContext.Provider value={{ isConnected, events, sendMessage }}>
+    <SocketContext.Provider value={{ isConnected, sendMessage }}>
       {children}
     </SocketContext.Provider>
   );

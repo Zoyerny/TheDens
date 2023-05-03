@@ -27,13 +27,18 @@ interface LoginResponse {
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setUser, setTokenExpired, setAccessToken, setRefreshToken } =
-    useAuth();
+  const { user, setUser, setAccessToken, setRefreshToken } = useAuth();
 
   const router = useRouter();
 
   const [loginMutation, { loading, error }] =
     useMutation<LoginResponse>(LOGIN_MUTATION);
+
+  useEffect(() => {
+    if (user) {
+      router.push("/acount");
+    }
+  }, [user]);
 
   const handleLogin = (event: FormEvent) => {
     event.preventDefault();
@@ -50,23 +55,12 @@ export default function Login() {
           setUser(result.data.signin.user);
           setAccessToken(result.data.signin.accessToken);
           setRefreshToken(result.data.signin.refreshToken);
-          router.push("/");
         }
-
-        setTokenExpired(false);
       })
       .catch((error) => {
         console.error(error);
       });
   };
-
-  /*useEffect(() =>{
-    if (user && !loadingHandler && !tokenExpired){
-      console.log("je passe ici");
-      router.push("/");
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[user, loadingHandler, tokenExpired ])*/
 
   return (
     <form

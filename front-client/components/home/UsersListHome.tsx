@@ -12,7 +12,6 @@ export interface User {
 export default function UsersListHome() {
   const { onlineUsers } = useHandler();
   const [isLoading, setIsLoading] = useState(true);
-  const { user } = useAuth();
 
   useEffect(() => {
     if (onlineUsers && onlineUsers.length > 0) {
